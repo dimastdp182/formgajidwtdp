@@ -157,57 +157,118 @@ const PayrollForm: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    setIsSubmitting(true);
+    setSubmitError('');
+    
     if (validateForm()) {
-      // Add NIK to submitted data to prevent duplicates
-      setSubmittedData(prev => [...prev, formData.nik]);
-      setIsSubmitted(true);
-      
-      // Here you would typically send data to your backend
-      console.log('Form submitted:', formData);
-      
-      // Reset form after successful submission
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setFormData({
-          opsId: '',
-          nama: '',
-          nik: '',
-          noHp: '',
-          alamatKtp: '',
-          alamatDomisili: '',
-          rtRw: '',
-          noRumah: '',
-          kelurahan: '',
-          kecamatan: '',
-          kota: '',
-          kodePos: '',
-          tempatLahir: '',
-          tanggalLahir: '',
-          umur: '',
-          jenisKelamin: '',
-          npwp: '',
-          namaAyah: '',
-          namaIbu: '',
-          noWaKontakDarurat: '',
-          namaKontakDarurat: '',
-          hubunganKontakDarurat: '',
-          noRekening: '',
-          namaPenerima: '',
-          jenisBank: '',
-          fotoKtp: null,
-          fotoKk: null,
-          bukuTabungan: null,
-          foto: null,
-          posisi: '',
-          contractType: '',
-          departement: '',
-          lokasi: ''
+      try {
+        // Prepare data for submission (exclude file objects for now)
+        const submissionData = {
+          opsId: formData.opsId,
+          nama: formData.nama,
+          nik: formData.nik,
+          noHp: formData.noHp,
+          alamatKtp: formData.alamatKtp,
+          alamatDomisili: formData.alamatDomisili,
+          rtRw: formData.rtRw,
+          noRumah: formData.noRumah,
+          kelurahan: formData.kelurahan,
+          kecamatan: formData.kecamatan,
+          kota: formData.kota,
+          kodePos: formData.kodePos,
+          tempatLahir: formData.tempatLahir,
+          tanggalLahir: formData.tanggalLahir,
+          umur: formData.umur,
+          jenisKelamin: formData.jenisKelamin,
+          npwp: formData.npwp,
+          namaAyah: formData.namaAyah,
+          namaIbu: formData.namaIbu,
+          noWaKontakDarurat: formData.noWaKontakDarurat,
+          namaKontakDarurat: formData.namaKontakDarurat,
+          hubunganKontakDarurat: formData.hubunganKontakDarurat,
+          noRekening: formData.noRekening,
+          namaPenerima: formData.namaPenerima,
+          jenisBank: formData.jenisBank,
+          posisi: formData.posisi,
+          contractType: formData.contractType,
+          departement: formData.departement,
+          lokasi: formData.lokasi
+        };
+
+        // Call Supabase Edge Function
+        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-payroll-data`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(submissionData),
         });
-      }, 3000);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Terjadi kesalahan saat mengirim data');
+        }
+
+        const result = await response.json();
+        console.log('Data berhasil dikirim:', result);
+
+        // Add NIK to submitted data to prevent duplicates
+        setSubmittedData(prev => [...prev, formData.nik]);
+        setIsSubmitted(true);
+        
+        // Reset form after successful submission
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            opsId: '',
+            nama: '',
+            nik: '',
+            noHp: '',
+            alamatKtp: '',
+            alamatDomisili: '',
+            rtRw: '',
+            noRumah: '',
+            kelurahan: '',
+            kecamatan: '',
+            kota: '',
+            kodePos: '',
+            tempatLahir: '',
+            tanggalLahir: '',
+            umur: '',
+            jenisKelamin: '',
+            npwp: '',
+            namaAyah: '',
+            namaIbu: '',
+            noWaKontakDarurat: '',
+            namaKontakDarurat: '',
+            hubunganKontakDarurat: '',
+            noRekening: '',
+            namaPenerima: '',
+            jenisBank: '',
+            fotoKtp: null,
+            fotoKk: null,
+            bukuTabungan: null,
+            foto: null,
+            posisi: '',
+            contractType: '',
+            departement: '',
+            lokasi: ''
+          });
+        }, 3000);
+
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        setSubmitError(error instanceof Error ? error.message : 'Terjadi kesalahan yang tidak diketahui');
+      }
+    } else {
+      setSubmitError('Mohon lengkapi semua field yang wajib diisi');
     }
+    
+    setIsSubmitting(false);
   };
 
   if (isSubmitted) {
