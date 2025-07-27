@@ -741,11 +741,23 @@ const PayrollForm: React.FC = () => {
             <div className="flex items-center justify-center">
               <button
                 type="submit"
-                className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-4 px-12 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300"
+                disabled={isSubmitting}
+                className={`bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-4 px-12 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                Kirim Data Penggajian
+                {isSubmitting ? 'Mengirim Data...' : 'Kirim Data Penggajian'}
               </button>
             </div>
+            
+            {submitError && (
+              <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center">
+                  <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                  <p className="text-red-700 font-medium">{submitError}</p>
+                </div>
+              </div>
+            )}
             
             {Object.keys(errors).length > 0 && (
               <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
