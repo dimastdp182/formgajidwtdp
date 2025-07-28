@@ -289,7 +289,7 @@ const PayrollForm: React.FC = () => {
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-2xl mb-8 p-8 text-center">
           <div className="flex items-center justify-center mb-4">
-            <img src="/download.jpeg" alt="Logo TDP" className="w-12 h-12 mr-3 object-contain" />
+            <img src="/Logo TDP.png" alt="Logo TDP" className="w-12 h-12 mr-3 object-contain" />
             <h1 className="text-3xl font-bold text-gray-800">LINK PENGGAJIAN DW TDP</h1>
           </div>
           <p className="text-gray-600">Form Pendaftaran Daily Worker - Sistem Penggajian</p>
